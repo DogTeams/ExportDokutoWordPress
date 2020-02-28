@@ -141,7 +141,7 @@ public class ExportDokuWikitoWordPressView extends javax.swing.JFrame {
         jLabel1.setText("Host site");
 
         jLabel2.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jLabel2.setText("BD Host");
+        jLabel2.setText("DB Host");
 
         jLabel3.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         jLabel3.setText("DB Login");
