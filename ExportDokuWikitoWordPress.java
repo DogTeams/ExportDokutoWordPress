@@ -11,10 +11,17 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.text.SimpleDateFormat;  
 import java.util.Date;  
-
+/**
+* Ce programme permet de migrer une page Dokuwiki en .txt sur Wordpress directement
+* dans la base de données en convertisan les différents balise de formatage du texte en celle
+* de html
+*
+* @author  Warren Schneerberger
+* @version 1.0
+*/
 public class ExportDokuWikitoWordPress {
     
-private String Host;
+private String Host; //test
 private String content;
 private String BDD;
 private String BDD_name;
@@ -23,11 +30,19 @@ private String BDD_mdp;
 
 private boolean list=false;
 private boolean list2=false;
-private boolean list6=false;
 private boolean list3=false;
 private boolean list4=false;
 private boolean list5=false;
+private boolean list6=false;
 
+    /**
+     *
+     * @param Host contient l'adresse de votre site
+     * @param BDD contient l'adresse de votre base de données
+     * @param BDD_name contient le nom de la base de données
+     * @param BDD_login contient votre identifiant
+     * @param BDD_mdp contient votre mdp
+     */
     public ExportDokuWikitoWordPress(String Host, String BDD, String BDD_name, String BDD_login, String BDD_mdp){
         this.Host = Host;
         this.BDD = BDD;
@@ -35,6 +50,12 @@ private boolean list5=false;
         this.BDD_login = BDD_login;
         this.BDD_mdp = BDD_mdp;
     }
+
+    /**
+     * Cette méthode permet de récuperé le contenu du .txt ligne par ligne afin d'utiliser les méthodes de la classe pour convertir les balises Dokuwiki en html
+     * @param pathToFile contient le chemin de votre fichier .txt
+     * @return Le contenu converti de votre fichier .txt qui viens de Dokuwxiki
+     */
     public String readFile(String pathToFile){
         ArrayList result = new ArrayList();
         try {
@@ -68,6 +89,13 @@ private boolean list5=false;
             return "Error. "+ex.getMessage();
         }
     }
+
+    /**
+     * Cette méthode permet d'exporter le contenu de la variable contenu qui contient le traitement du fichier .txt
+     * @param post_title
+     * @param post_name
+     * @return
+     */
     public String ExportBDD(String post_title, String post_name){
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-M-dd hh:mm:ss");  
@@ -84,7 +112,6 @@ private boolean list5=false;
                 String meta_key[] = {"nickname", "first_name", "last_name", "description", "rich_editing", "syntax_highlighting", "comment_shortcuts", "admin_color", "use_ssl", "show_admin_bar_front", "locale", "wp_capabilities", "wp_user_level", "dismissed_wp_pointers", "show_welcome_panel"};
                 String meta_value[] = {"wikitowordpress", "", "", "", "true", "true", "false", "fresh", "0", "true", "", "a:1:{s:13:\"administrator\";b:1;}", "10", "", "1"};
                 st.execute("INSERT INTO `wp_users` (`user_login`, `user_pass`, `user_nicename`, `user_email`, `user_url`, `user_registered`, `user_activation_key`, `user_status`, `display_name`) VALUES ('wikitowordpress', '$P$BptAKi0mF38ktqMq7BoZ9xUtmo8y8A/', 'WikitoWordPress', 'WikitoWordPress@test.com', '', '"+strDate+"', '', '0', 'WikitoWordPress')");
-               /* for(int i = 0;i<15;i++){ st3.execute("INSERT INTO `wp_usermeta` (`user_id`, `meta_key`, `meta_value`) VALUES ('"+post_author.getInt("id")+"', '"+meta_key[i]+"', '"+meta_value[i]+"')");}*/
             }
             
             st = (Statement) cn.createStatement();
@@ -106,6 +133,11 @@ private boolean list5=false;
             return e.getMessage();
         }
     }
+    /**
+     * Cette méthode permet de changer les balises de titre de Dokuwiki en celles de html
+     * @param ligne contient une ligne de document .txt
+     * @return
+     */
     private String Title(String ligne){
         if(ligne.contains("﻿")){ //Traitement d'un caractère insolite invisible
             ligne = ligne.replaceFirst("﻿","");
@@ -124,6 +156,11 @@ private boolean list5=false;
         }
         return ligne;
     }
+    /**
+     * Cette méthode permet de remplacer les balises pour faire des lignes par celles en html
+     * @param ligne
+     * @return
+     */
     private String Ligne(String ligne){
         if(ligne.contains("---")){
             ligne = ligne.replace("-", "");
@@ -131,6 +168,11 @@ private boolean list5=false;
         }
         return ligne;
     }
+    /**
+     * Cette méthode permet de remplacer les balises pour les citations par celles en html
+     * @param ligne
+     * @return
+     */
     private String Citation(String ligne){
         if(ligne.startsWith(">")){ // Traitement des balises pour les citations
             ligne = ligne.replace(">", "<blockquote> ");
@@ -138,6 +180,11 @@ private boolean list5=false;
         }
         return ligne;
     }
+    /**
+     * Cette méthode permet de remplacer les balises pour la mise en gras par celles en html
+     * @param ligne
+     * @return
+     */
     private String Gras(String ligne){
         String ponctuation[] = {"",".",",",";",":","!","?","”","“","“.","“,","“:","“!","“;","“?"};
         boolean verif = false;
@@ -188,6 +235,11 @@ private boolean list5=false;
         }
         return ligne;
     }
+    /**
+     * Cette méthode permet de remplacer les balises pour souligner par celles en html
+     * @param ligne
+     * @return
+     */
     private String Souligne(String ligne){
         String ponctuation[] = {"",".",",",";",":","!","?","”","“","“.","“,","“:","“!","“;","“?"};
         boolean verif = false;
@@ -205,7 +257,6 @@ private boolean list5=false;
                             tab[i] = "<u>"+test[2]+"</u>"+p;
                         }
                         verif = true;
-                        //System.out.println(tab[i]);
                     }
                 }
                 if(!verif){
@@ -239,6 +290,11 @@ private boolean list5=false;
         }
         return ligne;
     }
+    /**
+     * Cette méthode permet de remplacer les balises pour l'italique par celles en html
+     * @param ligne
+     * @return
+     */
     private String Italique(String ligne){
         String ponctuation[] = {"",".",",",";",":","!","?","”","“","“.","“,","“:","“!","“;","“?"};
         boolean verif = false;
@@ -289,6 +345,11 @@ private boolean list5=false;
         }
         return ligne;
     }
+    /**
+     * Cette méthode permet de remplacer les balises pour les liens par celles en html
+     * @param ligne
+     * @return
+     */
     private String Lien(String ligne){ // A finir
         if(ligne.contains("[[")&&ligne.contains("]]")){ //Traitement des liens
             var tab = ligne.split(" ");
@@ -350,6 +411,11 @@ private boolean list5=false;
         }
         return ligne;
     }
+    /**
+     * Cette permet de remplacer les balises pour les images par celles en html
+     * @param ligne
+     * @return
+     */
     private String Image(String ligne){
         if(ligne.contains("{{")){ //Traitement des balises pour les images
             var tab = ligne.split(" ");
@@ -410,31 +476,27 @@ private boolean list5=false;
         }
         return ligne;
     }
+    /**
+     * Cette méthode permet de remplacer les balises pour les listes Ordonnées par celles en html
+     * @param ligne
+     * @return
+     */
     private String ListeOrdonnee(String ligne){//Traitement Liste *
         if(!ligne.startsWith("  *") && list &&!ligne.startsWith("    *")&&!ligne.startsWith("      *") ){ //Fin de liste
-            // System.out.println(ligne);
             ligne = "</ul>" + ligne;
             list = false;
         }
         if(!ligne.startsWith("    *") && list2 &&!ligne.startsWith("      *")){ // Fin liste 2
-            // System.out.println(ligne);
             ligne = "</ul>" + ligne;
             list2 = false;
         }
-        /*if(!ligne.startsWith("      *") && list6){ // Fin liste 2
-            // System.out.println(ligne);
-            ligne = "</ul>" + ligne;
-            list6 = false;
-        }*/
         if(ligne.startsWith("</ul>  *")){ // Suite liste before liste 2
-            //System.out.println(ligne);
             if(!list){
                 ligne = ligne.replaceFirst("\\*","");
                 var stock = ligne;
                 ligne = "";
                 ligne = "</ul><ul><li>" + stock +" </li>";
                 list = true;
-                // System.out.println(ligne);
             }
             if(!list2&&list){
                 ligne = ligne.replaceFirst("\\*", "");
@@ -444,7 +506,6 @@ private boolean list5=false;
                 ligne = "</ul><li>" + stock + " </li>";
             }
             else{
-                //System.out.println(ligne);
                 ligne = ligne.replaceFirst("\\*", "");
                 var stock = ligne;
                 ligne = "";
@@ -453,17 +514,14 @@ private boolean list5=false;
             ligne = ligne.replace("\\"," \n ");
         }
         if(ligne.startsWith("  *")){//Liste
-            //System.out.println(ligne);
             if(!list){
                 ligne = ligne.replaceFirst("\\*","");
                 var stock = ligne;
                 ligne = "";
                 ligne = "<ul><li>" + stock +" </li>";
                 list = true;
-                // System.out.println(ligne);
             }
             else{
-                //System.out.println(ligne);
                 ligne = ligne.replaceFirst("\\*", "");
                 var stock = ligne;
                 ligne = "";
@@ -472,14 +530,12 @@ private boolean list5=false;
             ligne = ligne.replace("\\"," \n ");
         }
         if(ligne.startsWith("</ul>    *")){ // Suite liste before liste 3
-            //System.out.println(ligne);
             if(!list2){
                 ligne = ligne.replaceFirst("\\*","");
                 var stock = ligne;
                 ligne = "";
                 ligne = "</ul><li>" + stock +" </li>";
                 list2 = true;
-                // System.out.println(ligne);
             }
             if(!list6&&list2&&list){
                 ligne = ligne.replaceFirst("\\*", "");
@@ -489,7 +545,6 @@ private boolean list5=false;
                 ligne = "</ul><li>" + stock + " </li>";
             }
             else{
-                //System.out.println(ligne);
                 ligne = ligne.replaceFirst("\\*", "");
                 var stock = ligne;
                 ligne = "";
@@ -498,17 +553,14 @@ private boolean list5=false;
             ligne = ligne.replace("\\"," \n ");
         }
         if(ligne.startsWith("    *")){ //Liste 2
-            //System.out.println(ligne);
             if(!list2){
                 ligne = ligne.replaceFirst("\\*","");
                 var stock = ligne;
                 ligne = "";
                 ligne = "<ul><li>" + stock +" </li>";
                 list2 = true;
-                //System.out.println(ligne);
             }
             else{
-                //System.out.println(ligne);
                 ligne = ligne.replaceFirst("\\*", "");
                 var stock = ligne;
                 ligne = "";
@@ -518,17 +570,14 @@ private boolean list5=false;
         }
 
         if(ligne.startsWith("      *")){ //Liste 3
-            //System.out.println(ligne);
             if(!list6){
                 ligne = ligne.replaceFirst("\\*","");
                 var stock = ligne;
                 ligne = "";
                 ligne = "<ul><li>" + stock +" </li>";
                 list6 = true;
-                //System.out.println(ligne);
             }
             else{
-                //System.out.println(ligne);
                 ligne = ligne.replaceFirst("\\*", "");
                 var stock = ligne;
                 ligne = "";
@@ -540,26 +589,27 @@ private boolean list5=false;
 //Fin de Traitement Liste *
         return ligne;
     }
+    /**
+     * Cette méthode permet de remplacer les balises pour les listes Numérique Ordonnées par celles en html
+     * @param ligne
+     * @return
+     */
     private String ListeNumOrdonnee(String ligne){
         if(!ligne.startsWith("  -") && list3 &&!ligne.startsWith("    -") ){ // Traitement List -
-            // System.out.println(ligne);
             ligne = "</ol>" + ligne;
             list3 = false;
         }
         if(!ligne.startsWith("    -") && list4){
-            // System.out.println(ligne);
             ligne = "</ol>" + ligne;
             list4 = false;
         }
         if(ligne.startsWith("</ol>  -")){
-            //System.out.println(ligne);
             if(!list3){
                 ligne = ligne.replaceFirst("\\-","");
                 var stock = ligne;
                 ligne = "";
                 ligne = "</ol><ol><li>" + stock +" </li>";
                 list3 = true;
-                // System.out.println(ligne);
             }
             if(!list4&&list3){
                 ligne = ligne.replaceFirst("\\-", "");
@@ -569,7 +619,6 @@ private boolean list5=false;
                 ligne = "</ol><li>" + stock + " </li>";
             }
             else{
-                //System.out.println(ligne);
                 ligne = ligne.replaceFirst("\\-", "");
                 var stock = ligne;
                 ligne = "";
@@ -578,17 +627,14 @@ private boolean list5=false;
             ligne = ligne.replace("\\"," \n ");
         }
         if(ligne.startsWith("  -")){
-            //System.out.println(ligne);
             if(!list3){
                 ligne = ligne.replaceFirst("\\-","");
                 var stock = ligne;
                 ligne = "";
                 ligne = "<ol><li>" + stock +" </li>";
                 list3 = true;
-                // System.out.println(ligne);
             }
             else{
-                //System.out.println(ligne);
                 ligne = ligne.replaceFirst("\\-", "");
                 var stock = ligne;
                 ligne = "";
@@ -597,17 +643,14 @@ private boolean list5=false;
             ligne = ligne.replace("\\"," \n ");
         }
         if(ligne.startsWith("    -")){
-            //System.out.println(ligne);
             if(!list4){
                 ligne = ligne.replaceFirst("\\-","");
                 var stock = ligne;
                 ligne = "";
                 ligne = "<ol><li>" + stock +" </li>";
                 list4 = true;
-                //System.out.println(ligne);
             }
             else{
-                //System.out.println(ligne);
                 ligne = ligne.replaceFirst("\\-", "");
                 var stock = ligne;
                 ligne = "";
@@ -616,7 +659,6 @@ private boolean list5=false;
             ligne = ligne.replace("\\"," \n ");
         }
         if(ligne.startsWith("</ol>    -")){
-            //System.out.println(ligne);
             if(!list4){
                 ligne = ligne.replaceFirst("\\-","");
                 var stock = ligne;
@@ -626,7 +668,6 @@ private boolean list5=false;
                 System.out.println(ligne);
             }
             else{
-                //System.out.println(ligne);
                 ligne = ligne.replaceFirst("\\-", "");
                 var stock = ligne;
                 ligne = "";
@@ -636,6 +677,11 @@ private boolean list5=false;
         }
         return ligne;
     }
+    /**
+     * Cette méthode permet de remplacer les balises pour les tableau par celle en html
+     * @param ligne
+     * @return
+     */
     private String Tableau(String ligne){
         if(!ligne.startsWith("|")&&list5){
             ligne = "</table>" + ligne;
@@ -682,12 +728,22 @@ private boolean list5=false;
         }
         return ligne;
     }
+    /**
+     * Cette méthode permet de supprimer un double antislash de la ligne
+     * @param ligne
+     * @return
+     */
     private String antiSlash(String ligne){
         if(ligne.contains("\\")){
             ligne = ligne.replace("\\", "");
         }
         return ligne;
     }
+    /**
+     * Cette méthode permet de remplacer les guillemets afin d'éviter des problème SQL lors de l'exportation
+     * @param ligne
+     * @return
+     */
     private String guillemet(String ligne){
         if(ligne.contains("\"")){
             ligne = ligne.replace("\"","“");
