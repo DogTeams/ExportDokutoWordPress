@@ -1,5 +1,5 @@
 
-package test;
+package Controller;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -54,7 +54,7 @@ private boolean list6=false;
     /**
      * Cette méthode permet de récuperé le contenu du .txt ligne par ligne afin d'utiliser les méthodes de la classe pour convertir les balises Dokuwiki en html
      * @param pathToFile contient le chemin de votre fichier .txt
-     * @return Le contenu converti de votre fichier .txt qui viens de Dokuwxiki
+     * @return String Une Erreur ou la Réussite
      */
     public String readFile(String pathToFile){
         ArrayList result = new ArrayList();
@@ -94,7 +94,7 @@ private boolean list6=false;
      * Cette méthode permet d'exporter le contenu de la variable contenu qui contient le traitement du fichier .txt
      * @param post_title
      * @param post_name
-     * @return
+     * @return String Une Erreur ou la Réussite
      */
     public String ExportBDD(String post_title, String post_name){
         Date date = new Date();
@@ -109,8 +109,6 @@ private boolean list6=false;
             
             var post_author = st.executeQuery("SELECT id FROM wp_users where user_nicename='WikitoWordPress'");
             if(!post_author.next()){
-                String meta_key[] = {"nickname", "first_name", "last_name", "description", "rich_editing", "syntax_highlighting", "comment_shortcuts", "admin_color", "use_ssl", "show_admin_bar_front", "locale", "wp_capabilities", "wp_user_level", "dismissed_wp_pointers", "show_welcome_panel"};
-                String meta_value[] = {"wikitowordpress", "", "", "", "true", "true", "false", "fresh", "0", "true", "", "a:1:{s:13:\"administrator\";b:1;}", "10", "", "1"};
                 st.execute("INSERT INTO `wp_users` (`user_login`, `user_pass`, `user_nicename`, `user_email`, `user_url`, `user_registered`, `user_activation_key`, `user_status`, `display_name`) VALUES ('wikitowordpress', '$P$BptAKi0mF38ktqMq7BoZ9xUtmo8y8A/', 'WikitoWordPress', 'WikitoWordPress@test.com', '', '"+strDate+"', '', '0', 'WikitoWordPress')");
             }
             
@@ -136,7 +134,7 @@ private boolean list6=false;
     /**
      * Cette méthode permet de changer les balises de titre de Dokuwiki en celles de html
      * @param ligne contient une ligne de document .txt
-     * @return
+     * @return String La Ligne les balises html pour les titres
      */
     private String Title(String ligne){
         if(ligne.contains("﻿")){ //Traitement d'un caractère insolite invisible
@@ -159,7 +157,7 @@ private boolean list6=false;
     /**
      * Cette méthode permet de remplacer les balises pour faire des lignes par celles en html
      * @param ligne
-     * @return
+     * @return String La ligne avec les balises en html
      */
     private String Ligne(String ligne){
         if(ligne.contains("---")){
@@ -171,7 +169,7 @@ private boolean list6=false;
     /**
      * Cette méthode permet de remplacer les balises pour les citations par celles en html
      * @param ligne
-     * @return
+     * @return String La ligne avec les balises en html
      */
     private String Citation(String ligne){
         if(ligne.startsWith(">")){ // Traitement des balises pour les citations
@@ -183,7 +181,7 @@ private boolean list6=false;
     /**
      * Cette méthode permet de remplacer les balises pour la mise en gras par celles en html
      * @param ligne
-     * @return
+     * @return String La ligne avec les balises en html
      */
     private String Gras(String ligne){
         String ponctuation[] = {"",".",",",";",":","!","?","”","“","“.","“,","“:","“!","“;","“?"};
@@ -238,7 +236,7 @@ private boolean list6=false;
     /**
      * Cette méthode permet de remplacer les balises pour souligner par celles en html
      * @param ligne
-     * @return
+     * @return String La ligne avec les balises en html
      */
     private String Souligne(String ligne){
         String ponctuation[] = {"",".",",",";",":","!","?","”","“","“.","“,","“:","“!","“;","“?"};
@@ -293,7 +291,7 @@ private boolean list6=false;
     /**
      * Cette méthode permet de remplacer les balises pour l'italique par celles en html
      * @param ligne
-     * @return
+     * @return String La ligne avec les balises en html
      */
     private String Italique(String ligne){
         String ponctuation[] = {"",".",",",";",":","!","?","”","“","“.","“,","“:","“!","“;","“?"};
@@ -348,7 +346,7 @@ private boolean list6=false;
     /**
      * Cette méthode permet de remplacer les balises pour les liens par celles en html
      * @param ligne
-     * @return
+     * @return String La ligne avec les balises en html
      */
     private String Lien(String ligne){ // A finir
         if(ligne.contains("[[")&&ligne.contains("]]")){ //Traitement des liens
@@ -414,8 +412,8 @@ private boolean list6=false;
     /**
      * Cette permet de remplacer les balises pour les images par celles en html
      * @param ligne
-     * @return
-     */
+     * @return String La ligne avec les balises en html
+     */ 
     private String Image(String ligne){
         if(ligne.contains("{{")){ //Traitement des balises pour les images
             var tab = ligne.split(" ");
@@ -479,7 +477,7 @@ private boolean list6=false;
     /**
      * Cette méthode permet de remplacer les balises pour les listes Ordonnées par celles en html
      * @param ligne
-     * @return
+     * @return String La ligne avec les balises en html
      */
     private String ListeOrdonnee(String ligne){//Traitement Liste *
         if(!ligne.startsWith("  *") && list &&!ligne.startsWith("    *")&&!ligne.startsWith("      *") ){ //Fin de liste
@@ -592,7 +590,7 @@ private boolean list6=false;
     /**
      * Cette méthode permet de remplacer les balises pour les listes Numérique Ordonnées par celles en html
      * @param ligne
-     * @return
+     * @return String La ligne avec les balises en html
      */
     private String ListeNumOrdonnee(String ligne){
         if(!ligne.startsWith("  -") && list3 &&!ligne.startsWith("    -") ){ // Traitement List -
@@ -680,7 +678,7 @@ private boolean list6=false;
     /**
      * Cette méthode permet de remplacer les balises pour les tableau par celle en html
      * @param ligne
-     * @return
+     * @return String La ligne avec les balises en html
      */
     private String Tableau(String ligne){
         if(!ligne.startsWith("|")&&list5){
@@ -731,7 +729,7 @@ private boolean list6=false;
     /**
      * Cette méthode permet de supprimer un double antislash de la ligne
      * @param ligne
-     * @return
+     * @return String La ligne avec les balises en html
      */
     private String antiSlash(String ligne){
         if(ligne.contains("\\")){
@@ -742,7 +740,7 @@ private boolean list6=false;
     /**
      * Cette méthode permet de remplacer les guillemets afin d'éviter des problème SQL lors de l'exportation
      * @param ligne
-     * @return
+     * @return String La ligne avec les balises en html
      */
     private String guillemet(String ligne){
         if(ligne.contains("\"")){
